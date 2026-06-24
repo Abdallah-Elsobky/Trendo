@@ -20,16 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import iti.gov.trendo.data.remote.client.HttpClientFactory
+import iti.gov.trendo.data.remote.datasource.NewsRemoteDataSource
 import iti.gov.trendo.data.remote.datasource.NewsRemoteDataSourceImpl
 import iti.gov.trendo.data.remote.service.NewsApiServiceImpl
 import iti.gov.trendo.data.remote.utils.NetworkError
 import iti.gov.trendo.data.remote.utils.onError
 import iti.gov.trendo.data.remote.utils.onSuccess
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
 fun App() {
-    val api = remember { NewsRemoteDataSourceImpl(NewsApiServiceImpl(HttpClientFactory.createClient())) }
+    val api = getKoin().get<NewsRemoteDataSource>()
     var isLoading by remember { mutableStateOf(false) }
     var newsList: List<String> by remember { mutableStateOf<List<String>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<NetworkError?>(null) }

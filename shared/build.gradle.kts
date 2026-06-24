@@ -58,7 +58,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.ktor.client.okhttp)
-        }
+            implementation(libs.koin.android)        }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -75,6 +75,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             // ktor
             implementation(libs.bundles.ktor)
+            // koin
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
