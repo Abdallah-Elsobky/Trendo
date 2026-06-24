@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
     id("com.codingfeline.buildkonfig") version "0.21.2"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 val localProperties = Properties().apply {
@@ -78,6 +80,11 @@ kotlin {
             // koin
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            // room
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+            // logger
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -85,6 +92,11 @@ kotlin {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    ksp(libs.room.compiler)
 }
