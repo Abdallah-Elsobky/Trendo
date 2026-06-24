@@ -1,9 +1,13 @@
 package iti.gov.trendo.data.local.datasource
 
+import iti.gov.trendo.data.local.entity.CategoryEntity
 import iti.gov.trendo.data.local.entity.NewsEntity
+import iti.gov.trendo.data.local.entity.RegionEntity
 import kotlinx.coroutines.flow.Flow
 
 interface NewsLocalDataSource {
+
+    // ─── News ─────────────────────────────────────────────────────────────────
 
     fun getNews(): Flow<List<NewsEntity>>
 
@@ -33,4 +37,16 @@ interface NewsLocalDataSource {
     suspend fun clearExpiredNews(expirationTime: Long)
 
     suspend fun clearNews()
+
+    // ─── Categories ───────────────────────────────────────────────────────────
+
+    fun getCategories(): Flow<List<CategoryEntity>>
+
+    suspend fun saveCategories(categories: List<CategoryEntity>)
+
+    // ─── Regions ──────────────────────────────────────────────────────────────
+
+    fun getRegions(): Flow<List<RegionEntity>>
+
+    suspend fun saveRegions(regions: List<RegionEntity>)
 }

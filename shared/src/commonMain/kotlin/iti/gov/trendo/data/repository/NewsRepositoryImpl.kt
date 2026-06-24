@@ -1,4 +1,4 @@
-﻿package iti.gov.trendo.data.repository
+package iti.gov.trendo.data.repository
 
 import iti.gov.trendo.data.local.datasource.NewsLocalDataSource
 import iti.gov.trendo.data.mapper.toArticle
@@ -103,13 +103,31 @@ class NewsRepositoryImpl(
         else localDataSource.removeFromFavorite(id)
     }
 
-    override suspend fun getCategories(): Result<List<String>, NetworkError> =
-        remoteDataSource.getCategories().map { response -> response.categories }
+    override fun getCategories(): Flow<List<String>> =
+        localDataSource.getCategories().map { entities -> entities.map { it.name } }
 
+    override suspend fun refreshCategories(): Result<Unit, NetworkError> =
+        remoteDataSource.getCategories()
+            .onSuccess { response ->
+                val entities = response.categories.map {
+                    iti.gov.trendo.data.local.entity.CategoryEntity(name = it)
+                }
+                localDataSource.saveCategories(entities)
+            }
+            .map { }
 
-    override suspend fun getRegions(): Result<List<String>, NetworkError> =
-        remoteDataSource.getRegions().map { response -> response.regions }
+    override fun getRegions(): Flow<List<String>> =
+        localDataSource.getRegions().map { entities -> entities.map { it.name } }
 
+    override suspend fun refreshRegions(): Result<Unit, NetworkError> =
+        remoteDataSource.getRegions()
+            .onSuccess { response ->
+                val entities = response.regions.map {
+                    iti.gov.trendo.data.local.entity.RegionEntity(name = it)
+                }
+                localDataSource.saveRegions(entities)
+            }
+            .map { }
 
     override suspend fun clearExpiredCache(expirationTime: Long) =
         localDataSource.clearExpiredNews(expirationTime)
