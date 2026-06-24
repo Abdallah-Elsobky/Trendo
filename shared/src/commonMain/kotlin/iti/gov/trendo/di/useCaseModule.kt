@@ -28,7 +28,6 @@ val useCaseModule = module {
     factory { GetFavoriteNewsUseCase(repository = get()) }
     factory { ToggleFavoriteUseCase(repository = get()) }
 
-    // ─── Metadata ─────────────────────────────────────────────────────────────
     factory { GetCategoriesUseCase(repository = get()) }
     factory { RefreshCategoriesUseCase(repository = get()) }
     factory { GetRegionsUseCase(repository = get()) }

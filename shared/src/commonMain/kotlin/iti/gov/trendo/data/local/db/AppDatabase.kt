@@ -15,7 +15,7 @@ import iti.gov.trendo.data.local.entity.RegionEntity
         CategoryEntity::class,
         RegionEntity::class,
     ],
-    version = 2
+    version = 1
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

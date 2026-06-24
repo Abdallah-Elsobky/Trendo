@@ -12,7 +12,6 @@ class NewsLocalDataSourceImpl(
     private val metadataDao: MetadataDao,
 ) : NewsLocalDataSource {
 
-    // ─── News ─────────────────────────────────────────────────────────────────
 
     override fun getNews(): Flow<List<NewsEntity>> =
         newsDao.observeCachedNews()
@@ -62,7 +61,6 @@ class NewsLocalDataSourceImpl(
     override suspend fun clearNews() =
         newsDao.clearNonFavoriteNews()
 
-    // ─── Categories ───────────────────────────────────────────────────────────
 
     override fun getCategories(): Flow<List<CategoryEntity>> =
         metadataDao.observeCategories()
@@ -70,7 +68,6 @@ class NewsLocalDataSourceImpl(
     override suspend fun saveCategories(categories: List<CategoryEntity>) =
         metadataDao.insertCategories(categories)
 
-    // ─── Regions ──────────────────────────────────────────────────────────────
 
     override fun getRegions(): Flow<List<RegionEntity>> =
         metadataDao.observeRegions()

@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MetadataDao {
 
-    // ─── Categories ───────────────────────────────────────────────────────────
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategories(categories: List<CategoryEntity>)
 
@@ -22,7 +20,6 @@ interface MetadataDao {
     @Query("DELETE FROM categories")
     suspend fun clearCategories()
 
-    // ─── Regions ──────────────────────────────────────────────────────────────
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRegions(regions: List<RegionEntity>)

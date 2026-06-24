@@ -38,28 +38,13 @@ interface NewsRepository {
 
     suspend fun toggleFavorite(id: String, isFavorite: Boolean)
 
-    /**
-     * Reactive stream of categories from the local DB.
-     * Emits an empty list until [refreshCategories] populates the cache.
-     */
+
     fun getCategories(): Flow<List<String>>
 
-    /**
-     * Fetches categories from the API and saves to the local DB.
-     * The [getCategories] Flow re-emits automatically on success.
-     */
     suspend fun refreshCategories(): Result<Unit, NetworkError>
 
-    /**
-     * Reactive stream of regions from the local DB.
-     * Emits an empty list until [refreshRegions] populates the cache.
-     */
     fun getRegions(): Flow<List<String>>
 
-    /**
-     * Fetches regions from the API and saves to the local DB.
-     * The [getRegions] Flow re-emits automatically on success.
-     */
     suspend fun refreshRegions(): Result<Unit, NetworkError>
 
     suspend fun clearExpiredCache(expirationTime: Long)

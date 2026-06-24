@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsLocalDataSource {
 
-    // ─── News ─────────────────────────────────────────────────────────────────
 
     fun getNews(): Flow<List<NewsEntity>>
 
@@ -38,13 +37,11 @@ interface NewsLocalDataSource {
 
     suspend fun clearNews()
 
-    // ─── Categories ───────────────────────────────────────────────────────────
 
     fun getCategories(): Flow<List<CategoryEntity>>
 
     suspend fun saveCategories(categories: List<CategoryEntity>)
 
-    // ─── Regions ──────────────────────────────────────────────────────────────
 
     fun getRegions(): Flow<List<RegionEntity>>
 
