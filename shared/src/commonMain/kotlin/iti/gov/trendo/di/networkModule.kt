@@ -19,10 +19,4 @@ val networkModule = module {
             httpClient = get()
         )
     }
-
-    single<NewsRemoteDataSource> {
-        NewsRemoteDataSourceImpl(
-            newsApiService = get()
-        )
-    }
 }
