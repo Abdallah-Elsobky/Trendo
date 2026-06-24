@@ -6,6 +6,8 @@ val appModules = listOf(
     networkModule,
     databaseModule,
     dataSourceModule,
+    repositoryModule,
+    useCaseModule,
 )
 
 fun initKoin() {
