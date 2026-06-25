@@ -57,4 +57,39 @@ interface NewsDao {
     suspend fun deleteExpiredNews(
         expirationTime: Long
     )
+
+    @Query(
+        """
+        SELECT * FROM news
+        WHERE (:category IS NULL OR category = :category)
+          AND (:language IS NULL OR language = :language)
+          AND (:region   IS NULL OR url LIKE '%' || :region || '%')
+        ORDER BY cachedAt DESC
+        """
+    )
+    fun observeFilteredNews(
+        category: String?,
+        language: String?,
+        region: String?,
+    ): Flow<List<NewsEntity>>
+
+
+    @Query(
+        """
+        SELECT * FROM news
+        WHERE (title       LIKE '%' || :query || '%'
+            OR description LIKE '%' || :query || '%'
+            OR author      LIKE '%' || :query || '%')
+          AND (:category IS NULL OR category = :category)
+          AND (:language IS NULL OR language = :language)
+          AND (:region   IS NULL OR url LIKE '%' || :region || '%')
+        ORDER BY cachedAt DESC
+        """
+    )
+    fun searchCachedNews(
+        query: String,
+        category: String?,
+        language: String?,
+        region: String?,
+    ): Flow<List<NewsEntity>>
 }

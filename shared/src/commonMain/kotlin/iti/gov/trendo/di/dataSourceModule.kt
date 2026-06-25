@@ -15,7 +15,8 @@ val dataSourceModule = module {
 
     single<NewsLocalDataSource> {
         NewsLocalDataSourceImpl(
-            newsDao = get()
+            newsDao = get(),
+            metadataDao = get(),
         )
     }
 }

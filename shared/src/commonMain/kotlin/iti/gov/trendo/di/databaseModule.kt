@@ -13,4 +13,8 @@ val databaseModule = module {
     single {
         get<AppDatabase>().newsDao()
     }
+
+    single {
+        get<AppDatabase>().metadataDao()
+    }
 }

@@ -2,6 +2,7 @@ package iti.gov.trendo.data.mapper
 
 import iti.gov.trendo.data.local.entity.NewsEntity
 import iti.gov.trendo.data.remote.dto.NewsItem
+import iti.gov.trendo.domain.model.Article
 import kotlin.time.Clock
 
 fun NewsItem.toEntity(
@@ -34,3 +35,19 @@ fun List<NewsItem?>.toEntityList(
         )
     }
 }
+
+fun NewsEntity.toArticle(): Article {
+    return Article(
+        id = id,
+        title = title.orEmpty(),
+        description = description,
+        imageUrl = image,
+        category = category ?: "general",
+        author = author,
+        publishedAt = published,
+        isFavorite = isFavorite,
+        url = url
+    )
+}
+
+fun List<NewsEntity>.toArticleList(): List<Article> = map { it.toArticle() }

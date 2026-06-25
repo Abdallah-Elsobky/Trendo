@@ -1,0 +1,20 @@
+﻿package iti.gov.trendo.domain.usecase
+
+import iti.gov.trendo.domain.model.Article
+import iti.gov.trendo.domain.repository.NewsRepository
+import kotlinx.coroutines.flow.Flow
+
+
+class SearchNewsUseCase(private val repository: NewsRepository) {
+    operator fun invoke(
+        query: String,
+        category: String? = null,
+        language: String? = null,
+        region: String? = null,
+    ): Flow<List<Article>> = repository.searchNews(
+        query = query,
+        category = category,
+        language = language,
+        region = region,
+    )
+}
