@@ -8,5 +8,6 @@ data class Article(
     val category: String,
     val author: String?,
     val publishedAt: String?,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val url: String? = null
 )

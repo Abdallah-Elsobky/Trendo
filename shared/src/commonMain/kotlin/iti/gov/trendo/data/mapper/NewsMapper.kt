@@ -45,7 +45,8 @@ fun NewsEntity.toArticle(): Article {
         category = category ?: "general",
         author = author,
         publishedAt = published,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        url = url
     )
 }
 
