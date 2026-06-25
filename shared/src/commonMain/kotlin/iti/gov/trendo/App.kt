@@ -1,105 +1,127 @@
 package iti.gov.trendo
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import iti.gov.trendo.data.local.dao.NewsDao
-import iti.gov.trendo.data.local.db.AppDatabase
-import iti.gov.trendo.data.mapper.toEntity
-import iti.gov.trendo.data.remote.client.HttpClientFactory
-import iti.gov.trendo.data.remote.datasource.NewsRemoteDataSource
-import iti.gov.trendo.data.remote.datasource.NewsRemoteDataSourceImpl
-import iti.gov.trendo.data.remote.dto.NewsItem
-import iti.gov.trendo.data.remote.service.NewsApiServiceImpl
-import iti.gov.trendo.data.remote.utils.NetworkError
-import iti.gov.trendo.data.remote.utils.onError
-import iti.gov.trendo.data.remote.utils.onSuccess
-import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
-import co.touchlab.kermit.Logger
-import iti.gov.trendo.data.local.datasource.NewsLocalDataSource
-import iti.gov.trendo.data.mapper.toEntityList
+import iti.gov.trendo.presentation.navigation.LocalNavController
+import iti.gov.trendo.presentation.navigation.NavigationController
+import iti.gov.trendo.presentation.navigation.Screen
+import iti.gov.trendo.presentation.theme.TrendoTheme
+import iti.gov.trendo.presentation.ui.details.DetailsDialog
+import iti.gov.trendo.presentation.ui.favorite.FavoriteScreen
+import iti.gov.trendo.presentation.ui.home.HomeScreen
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App() {
-    val api = getKoin().get<NewsRemoteDataSource>()
-    val db = getKoin().get<NewsDao>()
-    val local = getKoin().get<NewsLocalDataSource>()
-    var isLoading by remember { mutableStateOf(false) }
-    var newsList: List<NewsItem?> by remember { mutableStateOf(emptyList()) }
-    var errorMessage by remember { mutableStateOf<NetworkError?>(null) }
-    val scope = rememberCoroutineScope()
+    val navController = remember { NavigationController() }
 
-    MaterialTheme {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextField(
-                modifier = Modifier.fillMaxWidth().height(200.dp)
-                    .padding(22.dp),
-                value = newsList.toString(),
-                onValueChange = {},
-                readOnly = true,
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground)
-            )
-            Spacer(Modifier.height(33.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading,
-                onClick = {
-                    scope.launch {
-                        isLoading = true
-                        errorMessage = null
-                        val result = api.getArticles()
-                        result.onSuccess { response ->
-                            newsList = response.news ?: emptyList()
-//                            Logger.d { newsList.toEntityList().toString() }
-//                            db.insertNews(newsList.toEntityList())
-                        }
-                        result.onError { error ->
-                            errorMessage = error
-                        }
-                        isLoading = false
-                        local.getNews().collect {
-                            Logger.d { "LOCO" + it.toString() }
-                        }
+    CompositionLocalProvider(LocalNavController provides navController) {
+        TrendoTheme {
+            val currentScreen = navController.currentScreen
+            val baseScreen = navController.baseScreen
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
+            ) {
+                when (baseScreen) {
+                    is Screen.Home -> HomeScreen(viewModel = koinViewModel())
+                    is Screen.Favorites -> FavoriteScreen(viewModel = koinViewModel())
+                    else -> HomeScreen(viewModel = koinViewModel())
+                }
+
+                (currentScreen as? Screen.Details)?.let { details ->
+                    DetailsDialog(
+                        articleId = details.articleId,
+                        viewModel = koinViewModel(),
+                        onDismiss = { navController.navigateBack() }
+                    )
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color.White,
+                    shadowElevation = 12.dp,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 48.dp, vertical = 20.dp)
+                        .height(60.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val isHomeSelected = baseScreen is Screen.Home
+                        NavBarItem(
+                            icon = Icons.Default.Home,
+                            label = "Home",
+                            isSelected = isHomeSelected,
+                            onClick = { navController.navigateTo(Screen.Home) }
+                        )
+
+                        val isFavSelected = baseScreen is Screen.Favorites
+                        NavBarItem(
+                            icon = Icons.Default.Favorite,
+                            label = "Saved",
+                            isSelected = isFavSelected,
+                            onClick = { navController.navigateTo(Screen.Favorites) }
+                        )
                     }
                 }
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(15.dp),
-                        strokeWidth = 1.dp,
-                        color = Color.White
-                    )
-                } else {
-                    Text(text = "Search")
-                }
             }
-            errorMessage?.let {
-                Text(
-                    text = "Error: $it",
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+        }
+    }
+}
+
+@Composable
+private fun NavBarItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(52.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                modifier = Modifier.size(if (isSelected) 26.dp else 22.dp)
+            )
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 3.dp)
+                        .size(width = 18.dp, height = 3.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        shape = RoundedCornerShape(2.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    ) {}
+                }
             }
         }
     }
