@@ -85,6 +85,9 @@ kotlin {
             // room
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
+            // coil3
+            implementation(libs.coil.compose)
+            implementation(libs.coil.ktor)
             // logger
             implementation(libs.kermit)
         }
